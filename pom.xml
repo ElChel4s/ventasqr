@@ -19,7 +19,7 @@
     <description>Sistema de ventas de productos con código QR</description>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>23</java.version>
     </properties>
 
     <dependencies>
@@ -112,6 +112,7 @@
 
     <build>
         <plugins>
+            
             <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
