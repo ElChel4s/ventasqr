@@ -1,51 +1,81 @@
 package com.universidad.proyventasqr.controller;
 
-import com.universidad.proyventasqr.model.Almacen;
-import com.universidad.proyventasqr.service.AlmacenService;
-
+import com.universidad.proyventasqr.dto.AlmacenDTO;
+import com.universidad.proyventasqr.service.IAlmacenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/almacenes")
 public class AlmacenController {
 
+    private final IAlmacenService almacenService;
+
     @Autowired
-    private AlmacenService almacenService;
+    public AlmacenController(IAlmacenService almacenService) {
+        this.almacenService = almacenService;
+    }
 
+    /**
+     * Obtener todos los almacenes.
+     * 
+     * @return ResponseEntity con lista de almacenes.
+     */
     @GetMapping
-    public List<Almacen> getAllAlmacenes() {
-        return almacenService.getAllAlmacenes();
+    public ResponseEntity<List<AlmacenDTO>> obtenerTodosLosAlmacenes() {
+        List<AlmacenDTO> almacenes = almacenService.obtenerTodosLosAlmacenes();
+        return ResponseEntity.ok(almacenes);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Almacen> getAlmacenById(@PathVariable Long id) {
-        Optional<Almacen> almacen = almacenService.getAlmacenById(id);
-        return almacen.map(ResponseEntity::ok)
-                      .orElse(ResponseEntity.notFound().build());
-    }
-
+    /**
+     * Crear un nuevo almacén.
+     * 
+     * @param almacenDTO El DTO del almacén a crear.
+     * @return ResponseEntity con el almacén creado.
+     */
     @PostMapping
-    public Almacen createAlmacen(@RequestBody Almacen almacen) {
-        return almacenService.saveAlmacen(almacen);
+    public ResponseEntity<AlmacenDTO> crearAlmacen(@RequestBody AlmacenDTO almacenDTO) {
+        AlmacenDTO nuevoAlmacen = almacenService.crearAlmacen(almacenDTO);
+        return ResponseEntity.status(201).body(nuevoAlmacen);
     }
 
+    /**
+     * Actualizar un almacén existente.
+     * 
+     * @param id         El ID del almacén a actualizar.
+     * @param almacenDTO Los nuevos datos del almacén.
+     * @return ResponseEntity con el almacén actualizado.
+     */
     @PutMapping("/{id}")
-    public ResponseEntity<Almacen> updateAlmacen(@PathVariable Long id, @RequestBody Almacen almacenDetails) {
-        Almacen updated = almacenService.updateAlmacen(id, almacenDetails);
-        if (updated == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<AlmacenDTO> actualizarAlmacen(@PathVariable Long id, @RequestBody AlmacenDTO almacenDTO) {
+        AlmacenDTO almacenActualizado = almacenService.actualizarAlmacen(id, almacenDTO);
+        return ResponseEntity.ok(almacenActualizado);
     }
 
+    /**
+     * Eliminar un almacén.
+     * 
+     * @param id El ID del almacén a eliminar.
+     * @return ResponseEntity vacío con código 204 si es exitoso.
+     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAlmacen(@PathVariable Long id) {
-        almacenService.deleteAlmacen(id);
+    public ResponseEntity<Void> eliminarAlmacen(@PathVariable Long id) {
+        almacenService.eliminarAlmacen(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Obtener almacenes filtrados por su estado (activo/inactivo).
+     * 
+     * @param estado El estado del almacén (activo/inactivo).
+     * @return ResponseEntity con lista de almacenes filtrados.
+     */
+    @GetMapping("/estado")
+    public ResponseEntity<List<AlmacenDTO>> obtenerAlmacenesPorEstado(@RequestParam String estado) {
+        List<AlmacenDTO> almacenes = almacenService.obtenerAlmacenesPorEstado(estado);
+        return ResponseEntity.ok(almacenes);
     }
 }
