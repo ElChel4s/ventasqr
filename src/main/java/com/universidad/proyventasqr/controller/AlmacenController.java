@@ -32,7 +32,6 @@ public class AlmacenController {
 
     /**
      * Crear un nuevo almacén.
-     * 
      * @param almacenDTO El DTO del almacén a crear.
      * @return ResponseEntity con el almacén creado.
      */
@@ -44,8 +43,7 @@ public class AlmacenController {
 
     /**
      * Actualizar un almacén existente.
-     * 
-     * @param id         El ID del almacén a actualizar.
+     * @param id El ID del almacén a actualizar.
      * @param almacenDTO Los nuevos datos del almacén.
      * @return ResponseEntity con el almacén actualizado.
      */
@@ -57,7 +55,6 @@ public class AlmacenController {
 
     /**
      * Eliminar un almacén.
-     * 
      * @param id El ID del almacén a eliminar.
      * @return ResponseEntity vacío con código 204 si es exitoso.
      */
