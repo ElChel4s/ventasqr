@@ -12,6 +12,8 @@ public interface IInventarioService {
 
     void eliminarInventario(Integer id);
 
+    void eliminarLogico(Integer id);
+
     List<InventarioDTO> obtenerInventariosPorAlmacen(Long almacenId);
 
     List<InventarioDTO> obtenerInventariosPorProducto(Integer productoId);

@@ -64,4 +64,59 @@ public class InventarioController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    /**
+     * Eliminar lógico de inventario (no borrar, solo marcar)
+     */
+    @DeleteMapping("/logico/{id}")
+    public ResponseEntity<Void> eliminarLogico(@PathVariable Integer id) {
+        inventarioService.eliminarLogico(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Listar inventarios ordenados por cantidad ascendente
+     */
+    @GetMapping("/ordenar/cantidad")
+    public ResponseEntity<List<InventarioDTO>> listarOrdenadosPorCantidad(@RequestParam(defaultValue = "asc") String orden) {
+        List<InventarioDTO> inventarios = inventarioService.obtenerTodosLosInventarios();
+        inventarios.sort((a, b) -> {
+            if (orden.equalsIgnoreCase("desc")) {
+                return b.getCantidad().compareTo(a.getCantidad());
+            } else {
+                return a.getCantidad().compareTo(b.getCantidad());
+            }
+        });
+        return ResponseEntity.ok(inventarios);
+    }
+
+    /**
+     * Listar inventarios ordenados por nombre ascendente o descendente
+     */
+    @GetMapping("/ordenar/nombre")
+    public ResponseEntity<List<InventarioDTO>> listarOrdenadosPorNombre(@RequestParam(defaultValue = "asc") String orden) {
+        List<InventarioDTO> inventarios = inventarioService.obtenerTodosLosInventarios();
+        inventarios.sort((a, b) -> {
+            String nombreA = a.getProductoId() != null ? a.getProductoId().toString() : "";
+            String nombreB = b.getProductoId() != null ? b.getProductoId().toString() : "";
+            if (orden.equalsIgnoreCase("desc")) {
+                return nombreB.compareToIgnoreCase(nombreA);
+            } else {
+                return nombreA.compareToIgnoreCase(nombreB);
+            }
+        });
+        return ResponseEntity.ok(inventarios);
+    }
+
+    /**
+     * Eliminar todos los inventarios de un almacén por su ID
+     */
+    @DeleteMapping("/almacen/{almacenId}")
+    public ResponseEntity<Void> eliminarInventariosPorAlmacen(@PathVariable Long almacenId) {
+        List<InventarioDTO> inventarios = inventarioService.obtenerInventariosPorAlmacen(almacenId);
+        for (InventarioDTO inv : inventarios) {
+            inventarioService.eliminarInventario(inv.getId());
+        }
+        return ResponseEntity.noContent().build();
+    }
 }

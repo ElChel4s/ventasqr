@@ -9,6 +9,7 @@ import com.universidad.proyventasqr.model.Almacen;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,6 +71,14 @@ public class InventarioServiceImpl implements IInventarioService {
         return inventarioRepository.findByProductoId(productoId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void eliminarLogico(Integer id) {
+        Inventario inventario = inventarioRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Inventario no encontrado"));
+        inventario.setCantidad(BigDecimal.ZERO); // Solo poner cantidad en cero como eliminación lógica
+        inventarioRepository.save(inventario);
     }
 
     private InventarioDTO convertToDTO(Inventario inventario) {

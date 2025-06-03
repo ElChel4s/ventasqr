@@ -1,7 +1,10 @@
 package com.universidad.proyventasqr.controller;
 
 import com.universidad.proyventasqr.dto.AlmacenDTO;
+import com.universidad.proyventasqr.dto.InventarioDTO;
+import com.universidad.proyventasqr.dto.MotivoBajaRequest;
 import com.universidad.proyventasqr.service.IAlmacenService;
+import com.universidad.proyventasqr.service.IInventarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +16,12 @@ import java.util.List;
 public class AlmacenController {
 
     private final IAlmacenService almacenService;
+    private final IInventarioService inventarioService;
 
     @Autowired
-    public AlmacenController(IAlmacenService almacenService) {
+    public AlmacenController(IAlmacenService almacenService, IInventarioService inventarioService) {
         this.almacenService = almacenService;
+        this.inventarioService = inventarioService;
     }
 
     /**
@@ -78,4 +83,110 @@ public class AlmacenController {
         List<AlmacenDTO> almacenes = almacenService.obtenerAlmacenesPorEstado(estado);
         return ResponseEntity.ok(almacenes);
     }
+
+    /**
+     * Listar almacenes ordenados por nombre ascendente o descendente
+     */
+    @GetMapping("/orden")
+    public ResponseEntity<List<AlmacenDTO>> listarOrdenados(@RequestParam(defaultValue = "asc") String orden) {
+        List<AlmacenDTO> almacenes = almacenService.obtenerTodosLosAlmacenes();
+        almacenes.sort((a, b) -> orden.equalsIgnoreCase("desc") ? b.getNombre().compareToIgnoreCase(a.getNombre())
+                : a.getNombre().compareToIgnoreCase(b.getNombre()));
+        return ResponseEntity.ok(almacenes);
+    }
+
+    /**
+     * Listar almacenes por nombre (contiene, no exacto)
+     */
+    @GetMapping("/buscar")
+    public ResponseEntity<List<AlmacenDTO>> buscarPorNombre(@RequestParam String nombre) {
+        List<AlmacenDTO> almacenes = almacenService.obtenerTodosLosAlmacenes();
+        List<AlmacenDTO> filtrados = almacenes.stream()
+                .filter(a -> a.getNombre().toLowerCase().contains(nombre.toLowerCase()))
+                .toList();
+        return ResponseEntity.ok(filtrados);
+    }
+
+    /**
+     * Eliminar lógico de almacén (cambia estado a 'eliminado')
+     */
+    @DeleteMapping("/logico/{id}")
+    public ResponseEntity<Void> eliminarLogico(@PathVariable Long id) {
+        almacenService.eliminarLogico(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Desactivar (eliminación lógica) un almacén con motivo de baja
+     */
+    @PutMapping("/baja/{id}")
+    public ResponseEntity<Void> bajaAlmacen(@PathVariable Long id, @RequestBody MotivoBajaRequest motivo) {
+        almacenService.bajaAlmacen(id, motivo.getMotivoBaja());
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Obtener un almacén por su ID
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<AlmacenDTO> obtenerPorId(@PathVariable Long id) {
+        List<AlmacenDTO> almacenes = almacenService.obtenerTodosLosAlmacenes();
+        return almacenes.stream()
+                .filter(a -> a.getIdAlm().equals(id))
+                .findFirst()
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Listar almacenes ordenados por capacidad ascendente o descendente
+     */
+    @GetMapping("/ordenar/capacidad")
+    public ResponseEntity<List<AlmacenDTO>> listarOrdenadosPorCapacidad(
+            @RequestParam(defaultValue = "asc") String orden) {
+        List<AlmacenDTO> almacenes = almacenService.obtenerTodosLosAlmacenes();
+        almacenes.sort((a, b) -> {
+            if (orden.equalsIgnoreCase("desc")) {
+                return b.getCapacidad().compareTo(a.getCapacidad());
+            } else {
+                return a.getCapacidad().compareTo(b.getCapacidad());
+            }
+        });
+        return ResponseEntity.ok(almacenes);
+    }
+
+    /**
+     * Listar almacenes ordenados por nombre ascendente o descendente
+     */
+    @GetMapping("/ordenar/nombre")
+    public ResponseEntity<List<AlmacenDTO>> listarOrdenadosPorNombre(@RequestParam(defaultValue = "asc") String orden) {
+        List<AlmacenDTO> almacenes = almacenService.obtenerTodosLosAlmacenes();
+        almacenes.sort((a, b) -> {
+            String nombreA = a.getNombre() != null ? a.getNombre() : "";
+            String nombreB = b.getNombre() != null ? b.getNombre() : "";
+            if (orden.equalsIgnoreCase("desc")) {
+                return nombreB.compareToIgnoreCase(nombreA);
+            } else {
+                return nombreA.compareToIgnoreCase(nombreB);
+            }
+        });
+        return ResponseEntity.ok(almacenes);
+    }
+
+    /**
+     * Eliminar un almacén y todos sus inventarios asociados por su ID (borrado
+     * físico en cascada)
+     */
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<Void> eliminarAlmacenYCascada(@PathVariable Long id) {
+        // Eliminar todos los inventarios asociados primero
+        List<InventarioDTO> inventarios = inventarioService.obtenerInventariosPorAlmacen(id);
+        for (InventarioDTO inv : inventarios) {
+            inventarioService.eliminarInventario(inv.getId());
+        }
+        // Ahora sí eliminar el almacén
+        almacenService.eliminarAlmacen(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

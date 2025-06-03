@@ -48,8 +48,19 @@ public class AlmacenServiceImpl implements IAlmacenService {
     }
 
     @Override
-    public void eliminarAlmacen(Long id) {
-        almacenRepository.deleteById(id);
+    public void eliminarLogico(Long id) {
+        Almacen almacen = almacenRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Almacén no encontrado"));
+        almacen.setEstado("eliminado");
+        almacenRepository.save(almacen);
+    }
+
+    @Override
+    public void bajaAlmacen(Long id, String motivoBaja) {
+        Almacen almacen = almacenRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Almacén no encontrado"));
+        almacen.setEstado("baja: " + motivoBaja);
+        almacenRepository.save(almacen);
     }
 
     @Override
@@ -57,6 +68,11 @@ public class AlmacenServiceImpl implements IAlmacenService {
         return almacenRepository.findByEstado(estado).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void eliminarAlmacen(Long id) {
+        almacenRepository.deleteById(id);
     }
 
     // Método auxiliar para convertir entidad a DTO

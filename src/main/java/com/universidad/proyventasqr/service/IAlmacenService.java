@@ -40,6 +40,14 @@ public interface IAlmacenService {
     void eliminarAlmacen(Long id);
 
     /**
+     * Elimina lógicamente un almacén por su ID (cambia su estado a inactivo, por
+     * ejemplo).
+     * 
+     * @param id ID del almacén a eliminar lógicamente.
+     */
+    void eliminarLogico(Long id);
+
+    /**
      * Obtiene almacenes filtrados por su estado (activo, inactivo, etc.).
      * 
      * @param estado Estado de los almacenes a obtener (por ejemplo, 'activo',
@@ -47,4 +55,12 @@ public interface IAlmacenService {
      * @return Lista de AlmacenDTO filtrados por estado.
      */
     List<AlmacenDTO> obtenerAlmacenesPorEstado(String estado);
+
+    /**
+     * Baja lógica de un almacén con motivo.
+     *
+     * @param id         ID del almacén a dar de baja.
+     * @param motivoBaja Motivo de la baja lógica.
+     */
+    void bajaAlmacen(Long id, String motivoBaja);
 }
