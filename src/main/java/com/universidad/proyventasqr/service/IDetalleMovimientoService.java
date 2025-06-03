@@ -2,11 +2,12 @@ package com.universidad.proyventasqr.service;
 
 import java.util.List;
 
-import com.universidad.proyventasqr.dto.ProductoDTO;
+import com.universidad.proyventasqr.dto.DetalleMovimientoDTO;
+// import com.universidad.proyventasqr.dto.ProductoDTO;
 
 public interface IDetalleMovimientoService {
 
-    List<ProductoDTO> obtenerProductosPorMovimiento(Long idMovimiento);
-    // Movimiento obtener
+    DetalleMovimientoDTO crearDetalleMovimiento(DetalleMovimientoDTO detalleMovimientoDTO);
+    List<DetalleMovimientoDTO> obtenerDetallePorMovimiento(Long movId);
     
 }

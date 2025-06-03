@@ -26,7 +26,7 @@ public class Movimiento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_mov")
-    private Long idMov;
+    private Long id;
     @Column(name = "tipo_mov")
     private String tipoMov;
     @Temporal(TemporalType.DATE)

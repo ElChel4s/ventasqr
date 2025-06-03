@@ -9,25 +9,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.universidad.proyventasqr.dto.ProductoDTO;
+import com.universidad.proyventasqr.dto.DetalleMovimientoDTO;
+// import com.universidad.proyventasqr.dto.ProductoDTO;
 import com.universidad.proyventasqr.service.IDetalleMovimientoService;
 
 @RestController
-@RequestMapping("/api/movimiento")
+@RequestMapping("/api/detalle")
 public class DetalleMovimientoController {
     @Autowired
     private IDetalleMovimientoService detalleService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<List<ProductoDTO>> obtenerProductosPorMovimiento(
-            @PathVariable Long id) {
-
-        List<ProductoDTO> productos = detalleService.obtenerProductosPorMovimiento(id);
-
-        if (productos.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.ok(productos);
+    @GetMapping("/{movId}")
+    public ResponseEntity<List<DetalleMovimientoDTO>> obtenerDetallePorMovimiento(@PathVariable Long movId){
+        List<DetalleMovimientoDTO> detalles = detalleService.obtenerDetallePorMovimiento(movId);
+        return ResponseEntity.ok(detalles);
     }
 }

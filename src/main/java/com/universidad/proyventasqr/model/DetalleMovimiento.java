@@ -22,7 +22,7 @@ public class DetalleMovimiento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_det")
-    private Long idDet;
+    private Long id;
     @ManyToOne
     @JoinColumn(name = "prod_id")
     private Producto producto;
