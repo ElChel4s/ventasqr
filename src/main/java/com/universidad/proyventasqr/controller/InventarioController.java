@@ -30,7 +30,8 @@ public class InventarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<InventarioDTO> actualizar(@PathVariable Integer id, @RequestBody InventarioDTO inventarioDTO) {
+    public ResponseEntity<InventarioDTO> actualizar(@PathVariable Integer id,
+            @RequestBody InventarioDTO inventarioDTO) {
         InventarioDTO actualizado = inventarioService.actualizarInventario(id, inventarioDTO);
         return ResponseEntity.ok(actualizado);
     }

@@ -1,4 +1,4 @@
-package com.univerwsidad.proyventasqr;
+package com.universidad.proyventasqr;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
