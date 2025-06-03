@@ -38,7 +38,8 @@ public class ProductoServiceImpl implements IProductoService {
             throw new IllegalArgumentException("La categoría es obligatoria");
         }
         Categoria categoria = categoriaRepository.findById(productoDTO.getCategoria().getId())
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+                .orElseThrow(() -> new RuntimeException(
+                        "La Categoría con ID: " + productoDTO.getCategoria().getId() + " no existe"));
         Producto producto = modelMapper.map(productoDTO, Producto.class);
         producto.setCategoria(categoria);
         Producto guardaProducto = productoRepository.save(producto);
@@ -47,26 +48,48 @@ public class ProductoServiceImpl implements IProductoService {
 
     @Override
     public ProductoDTO obtenerProductoPorId(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'obtenerProductoPorId'");
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("El Producto con ID: " + id + " no existe"));
+        return modelMapper.map(producto, ProductoDTO.class);
     }
 
     @Override
+    @Transactional
     public List<ProductoDTO> obtenerProductosPorCategoria(Long catId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'obtenerProductosPorCategoria'");
+        return productoRepository.findByCategoriaId(catId).stream()
+                .map(producto -> modelMapper.map(producto, ProductoDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Override
     public ProductoDTO actualizarProducto(Long id, ProductoDTO productoDTO) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'actualizarProducto'");
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("El Producto con ID: " + id + " no existe"));
+
+        // Verificar si se está cambiando la categoría
+        if (!producto.getCategoria().getId().equals(productoDTO.getCategoria().getId())) {
+            Categoria nuevaCategoria = categoriaRepository.findById(productoDTO.getCategoria().getId())
+                    .orElseThrow(() -> new RuntimeException(
+                            "la Categoría con id: " + productoDTO.getCategoria().getId() + " no existe"));
+            producto.setCategoria(nuevaCategoria);
+        }
+
+        producto.setNombre(productoDTO.getNombre());
+        producto.setPrecio(productoDTO.getPrecio());
+        producto.setStock(productoDTO.getStock());
+        producto.setEstado(productoDTO.getEstado());
+        producto.setCodigoQr(productoDTO.getCodigoQr());
+
+        Producto updatedProducto = productoRepository.save(producto);
+        return modelMapper.map(updatedProducto, ProductoDTO.class);
     }
 
     @Override
+    @Transactional
     public void eliminarProducto(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'eliminarProducto'");
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto con ID: " + id + " no existe"));
+        productoRepository.delete(producto);
     }
 
 }
