@@ -52,7 +52,13 @@ public class ProductoController {
         return ResponseEntity.ok(updatedProducto);
     }
 
-    @DeleteMapping("/{id}")
+    // @DeleteMapping("/{id}")
+    // public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
+    //     service.eliminarProducto(id);
+    //     return ResponseEntity.noContent().build();
+    // }
+    //Eliminacion logica "inactivo"
+    @PutMapping("/del/{id}")
     public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
         service.eliminarProducto(id);
         return ResponseEntity.noContent().build();

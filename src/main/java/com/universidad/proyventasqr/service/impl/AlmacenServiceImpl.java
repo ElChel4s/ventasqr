@@ -54,7 +54,7 @@ public class AlmacenServiceImpl implements IAlmacenService {
 
     public AlmacenDTO convertToDTO(Almacen almacen) {
         return AlmacenDTO.builder()
-                .id(almacen.getIdAlm())
+                .id(almacen.getId())
                 .nombre(almacen.getNombre())
                 .ubicacion(almacen.getUbicacion())
                 .capacidad(almacen.getCapacidad())

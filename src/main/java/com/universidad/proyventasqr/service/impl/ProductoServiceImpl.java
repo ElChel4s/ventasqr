@@ -62,6 +62,7 @@ public class ProductoServiceImpl implements IProductoService {
     }
 
     @Override
+    @Transactional
     public ProductoDTO actualizarProducto(Long id, ProductoDTO productoDTO) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("El Producto con ID: " + id + " no existe"));
@@ -84,12 +85,19 @@ public class ProductoServiceImpl implements IProductoService {
         return modelMapper.map(updatedProducto, ProductoDTO.class);
     }
 
+    // @Override
+    // @Transactional
+    // public void eliminarProducto(Long id) {
+    //     Producto producto = productoRepository.findById(id)
+    //             .orElseThrow(() -> new RuntimeException("El producto con ID: " + id + " no existe"));
+    //     productoRepository.delete(producto);
+    // }
     @Override
     @Transactional
     public void eliminarProducto(Long id) {
         Producto producto = productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto con ID: " + id + " no existe"));
-        productoRepository.delete(producto);
+                .orElseThrow(() -> new RuntimeException("El producto con ID: " + id + " no existe"));
+        producto.setEstado("inactivo");
     }
 
 }

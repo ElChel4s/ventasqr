@@ -19,7 +19,7 @@ public class Almacen {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_alm")
-    private Long idAlm;
+    private Long id;
 
     @Column(name = "nombre")
     private String nombre;
