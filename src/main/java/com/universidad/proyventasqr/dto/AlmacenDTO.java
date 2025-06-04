@@ -6,13 +6,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
+
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class AlmacenDTO {
-    private Long id;
-    private String nombre;
-    private String ubicacion;
-    private Integer capacidad;
-    private String estado;
+
+    private Long idAlm; // Identificador del almacén
+    private String nombre; // Nombre del almacén
+    private String ubicacion; // Ubicación del almacén
+    private Integer capacidad; // Capacidad del almacén
+    private String estado; // Estado del almacén (activo, inactivo, cerrado, etc.)
+
 }
+
