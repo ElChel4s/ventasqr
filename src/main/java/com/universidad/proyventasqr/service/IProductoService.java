@@ -11,6 +11,7 @@ public interface IProductoService {
     List<ProductoDTO> obtenerProductosPorCategoria(Long catId);
     ProductoDTO actualizarProducto(Long id, ProductoDTO productoDTO);
     void eliminarProducto(Long id);
+    ProductoDTO obtenerProductoPorCodigo(String codigo);
 
 
 }

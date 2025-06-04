@@ -1,12 +1,19 @@
 package com.universidad.proyventasqr.controller;
 
-import com.universidad.proyventasqr.dto.InventarioDTO;
-import com.universidad.proyventasqr.service.IInventarioService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.universidad.proyventasqr.dto.InventarioDTO;
+import com.universidad.proyventasqr.service.IInventarioService;
 
 @RestController
 @RequestMapping("/api/inventarios")
@@ -18,28 +25,11 @@ public class InventarioController {
         this.inventarioService = inventarioService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<InventarioDTO>> obtenerTodos() {
-        return ResponseEntity.ok(inventarioService.obtenerTodosLosInventarios());
-    }
-
-    @PostMapping
-    public ResponseEntity<InventarioDTO> crear(@RequestBody InventarioDTO inventarioDTO) {
-        InventarioDTO nuevo = inventarioService.crearInventario(inventarioDTO);
-        return ResponseEntity.status(201).body(nuevo);
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<InventarioDTO> actualizar(@PathVariable Integer id,
             @RequestBody InventarioDTO inventarioDTO) {
         InventarioDTO actualizado = inventarioService.actualizarInventario(id, inventarioDTO);
         return ResponseEntity.ok(actualizado);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
-        inventarioService.eliminarInventario(id);
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/almacen/{almacenId}")
@@ -66,15 +56,6 @@ public class InventarioController {
     }
 
     /**
-     * Eliminar lógico de inventario (no borrar, solo marcar)
-     */
-    @DeleteMapping("/logico/{id}")
-    public ResponseEntity<Void> eliminarLogico(@PathVariable Integer id) {
-        inventarioService.eliminarLogico(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    /**
      * Listar inventarios ordenados por cantidad ascendente
      */
     @GetMapping("/ordenar/cantidad")
@@ -91,14 +72,14 @@ public class InventarioController {
     }
 
     /**
-     * Listar inventarios ordenados por nombre ascendente o descendente
+     * Listar inventarios ordenados por nombre de producto ascendente o descendente
      */
     @GetMapping("/ordenar/nombre")
     public ResponseEntity<List<InventarioDTO>> listarOrdenadosPorNombre(@RequestParam(defaultValue = "asc") String orden) {
         List<InventarioDTO> inventarios = inventarioService.obtenerTodosLosInventarios();
         inventarios.sort((a, b) -> {
-            String nombreA = a.getProductoId() != null ? a.getProductoId().toString() : "";
-            String nombreB = b.getProductoId() != null ? b.getProductoId().toString() : "";
+            String nombreA = a.getProducto() != null && a.getProducto().getNombre() != null ? a.getProducto().getNombre() : "";
+            String nombreB = b.getProducto() != null && b.getProducto().getNombre() != null ? b.getProducto().getNombre() : "";
             if (orden.equalsIgnoreCase("desc")) {
                 return nombreB.compareToIgnoreCase(nombreA);
             } else {
@@ -106,17 +87,5 @@ public class InventarioController {
             }
         });
         return ResponseEntity.ok(inventarios);
-    }
-
-    /**
-     * Eliminar todos los inventarios de un almacén por su ID
-     */
-    @DeleteMapping("/almacen/{almacenId}")
-    public ResponseEntity<Void> eliminarInventariosPorAlmacen(@PathVariable Long almacenId) {
-        List<InventarioDTO> inventarios = inventarioService.obtenerInventariosPorAlmacen(almacenId);
-        for (InventarioDTO inv : inventarios) {
-            inventarioService.eliminarInventario(inv.getId());
-        }
-        return ResponseEntity.noContent().build();
     }
 }

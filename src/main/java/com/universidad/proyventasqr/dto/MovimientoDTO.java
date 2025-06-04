@@ -2,6 +2,7 @@ package com.universidad.proyventasqr.dto;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,5 +20,9 @@ public class MovimientoDTO implements Serializable{
     private String usuarioMov;
     private String estado;
     private AlmacenDTO almacen;
-    
+    private UsuarioDTO usuario;
+    private AlmacenDTO almacenOrigen;
+    private AlmacenDTO almacenDestino;
+    private String motivo;
+    private List<DetalleMovimientoDTO> detalles; // NUEVO: lista de productos/cantidades
 }

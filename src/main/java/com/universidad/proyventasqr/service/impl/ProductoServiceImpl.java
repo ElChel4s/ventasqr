@@ -2,8 +2,8 @@ package com.universidad.proyventasqr.service.impl;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.modelmapper.ModelMapper;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +42,14 @@ public class ProductoServiceImpl implements IProductoService {
                         "La Categoría con ID: " + productoDTO.getCategoria().getId() + " no existe"));
         Producto producto = modelMapper.map(productoDTO, Producto.class);
         producto.setCategoria(categoria);
+        producto.setCodigo(productoDTO.getCodigo());
+        producto.setDescripcion(productoDTO.getDescripcion());
+        producto.setStockMinimo(productoDTO.getStockMinimo());
+        if (productoDTO.getCreadoEn() == null) {
+            producto.setCreadoEn(java.time.LocalDateTime.now());
+        } else {
+            producto.setCreadoEn(productoDTO.getCreadoEn());
+        }
         Producto guardaProducto = productoRepository.save(producto);
         return modelMapper.map(guardaProducto, ProductoDTO.class);
     }
@@ -67,7 +75,6 @@ public class ProductoServiceImpl implements IProductoService {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("El Producto con ID: " + id + " no existe"));
 
-        // Verificar si se está cambiando la categoría
         if (!producto.getCategoria().getId().equals(productoDTO.getCategoria().getId())) {
             Categoria nuevaCategoria = categoriaRepository.findById(productoDTO.getCategoria().getId())
                     .orElseThrow(() -> new RuntimeException(
@@ -80,24 +87,29 @@ public class ProductoServiceImpl implements IProductoService {
         producto.setStock(productoDTO.getStock());
         producto.setEstado(productoDTO.getEstado());
         producto.setCodigoQr(productoDTO.getCodigoQr());
+        producto.setCodigo(productoDTO.getCodigo());
+        producto.setDescripcion(productoDTO.getDescripcion());
+        producto.setStockMinimo(productoDTO.getStockMinimo());
+        // No se actualiza creadoEn para mantener la fecha original
 
         Producto updatedProducto = productoRepository.save(producto);
         return modelMapper.map(updatedProducto, ProductoDTO.class);
     }
 
-    // @Override
-    // @Transactional
-    // public void eliminarProducto(Long id) {
-    //     Producto producto = productoRepository.findById(id)
-    //             .orElseThrow(() -> new RuntimeException("El producto con ID: " + id + " no existe"));
-    //     productoRepository.delete(producto);
-    // }
     @Override
     @Transactional
     public void eliminarProducto(Long id) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("El producto con ID: " + id + " no existe"));
         producto.setEstado("inactivo");
+        productoRepository.save(producto);
+    }
+
+    @Override
+    public ProductoDTO obtenerProductoPorCodigo(String codigo) {
+        Producto producto = productoRepository.findByCodigo(codigo)
+                .orElseThrow(() -> new RuntimeException("El producto con código: " + codigo + " no existe"));
+        return modelMapper.map(producto, ProductoDTO.class);
     }
 
 }

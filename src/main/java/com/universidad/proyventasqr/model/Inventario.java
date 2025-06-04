@@ -1,5 +1,8 @@
 package com.universidad.proyventasqr.model;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,9 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -29,8 +29,9 @@ public class Inventario {
     @Column(name = "id", nullable = false) // Columna no nula
     private Integer id; // Identificador único del inventario
 
-    @Column(name = "producto_id", nullable = false)
-    private Integer productoId; // ID del producto relacionado
+    @ManyToOne
+    @JoinColumn(name = "producto_id", referencedColumnName = "id_prod", nullable = false)
+    private Producto producto; // Relación con producto
 
     @ManyToOne
     @JoinColumn(name = "almacen_id", referencedColumnName = "id_alm", nullable = false)

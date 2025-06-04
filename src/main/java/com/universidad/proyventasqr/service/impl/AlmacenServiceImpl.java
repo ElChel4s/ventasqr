@@ -1,17 +1,16 @@
 package com.universidad.proyventasqr.service.impl;
 
-import com.universidad.proyventasqr.dto.AlmacenDTO;
-import com.universidad.proyventasqr.model.Almacen;
-import com.universidad.proyventasqr.repository.AlmacenRepository;
-import com.universidad.proyventasqr.service.IAlmacenService;
-
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-import java.util.stream.Collectors;
+import com.universidad.proyventasqr.dto.AlmacenDTO;
+import com.universidad.proyventasqr.model.Almacen;
+import com.universidad.proyventasqr.model.Usuario;
+import com.universidad.proyventasqr.repository.AlmacenRepository;
+import com.universidad.proyventasqr.service.IAlmacenService;
 
 
 @Service
@@ -33,7 +32,18 @@ public class AlmacenServiceImpl implements IAlmacenService {
 
     @Override
     public AlmacenDTO crearAlmacen(AlmacenDTO almacenDTO) {
-        Almacen almacen = convertToEntity(almacenDTO);
+        Almacen almacen = new Almacen();
+        almacen.setNombre(almacenDTO.getNombre());
+        almacen.setUbicacion(almacenDTO.getUbicacion());
+        almacen.setCapacidad(almacenDTO.getCapacidad());
+        almacen.setEstado(almacenDTO.getEstado());
+        if (almacenDTO.getResponsable() != null && almacenDTO.getResponsable().getId() != null) {
+            Usuario responsable = new Usuario();
+            responsable.setId(almacenDTO.getResponsable().getId());
+            almacen.setResponsable(responsable);
+        } else {
+            almacen.setResponsable(null);
+        }
         Almacen almacenGuardado = almacenRepository.save(almacen);
         return convertToDTO(almacenGuardado);
     }
@@ -46,7 +56,13 @@ public class AlmacenServiceImpl implements IAlmacenService {
         almacenExistente.setUbicacion(almacenDTO.getUbicacion());
         almacenExistente.setCapacidad(almacenDTO.getCapacidad());
         almacenExistente.setEstado(almacenDTO.getEstado());
-
+        if (almacenDTO.getResponsable() != null && almacenDTO.getResponsable().getId() != null) {
+            Usuario responsable = new Usuario();
+            responsable.setId(almacenDTO.getResponsable().getId());
+            almacenExistente.setResponsable(responsable);
+        } else {
+            almacenExistente.setResponsable(null);
+        }
         Almacen almacenActualizado = almacenRepository.save(almacenExistente);
         return convertToDTO(almacenActualizado);
     }
@@ -82,22 +98,38 @@ public class AlmacenServiceImpl implements IAlmacenService {
     // Método auxiliar para convertir entidad a DTO
     private AlmacenDTO convertToDTO(Almacen almacen) {
         return AlmacenDTO.builder()
-                .idAlm(almacen.getIdAlm())
+                .idAlm(almacen.getId())
                 .nombre(almacen.getNombre())
                 .ubicacion(almacen.getUbicacion())
                 .capacidad(almacen.getCapacidad())
                 .estado(almacen.getEstado())
+                .responsable(almacen.getResponsable() != null ?
+                    com.universidad.proyventasqr.dto.UsuarioDTO.builder()
+                        .id(almacen.getResponsable().getId())
+                        .nombreUsuario(almacen.getResponsable().getNombreUsuario())
+                        .rol(almacen.getResponsable().getRol() != null ?
+                            com.universidad.proyventasqr.dto.RolDTO.builder()
+                                .id(almacen.getResponsable().getRol().getId())
+                                .nombre(almacen.getResponsable().getRol().getNombre())
+                                .descripcion(almacen.getResponsable().getRol().getDescripcion())
+                                .build() : null)
+                        .build() : null)
                 .build();
     }
 
     // Método auxiliar para convertir DTO a entidad
     private Almacen convertToEntity(AlmacenDTO almacenDTO) {
-        return Almacen.builder()
-                .idAlm(almacenDTO.getIdAlm())
-                .nombre(almacenDTO.getNombre())
-                .ubicacion(almacenDTO.getUbicacion())
-                .capacidad(almacenDTO.getCapacidad())
-                .estado(almacenDTO.getEstado())
-                .build();
+        Almacen almacen = new Almacen();
+        almacen.setId(almacenDTO.getIdAlm());
+        almacen.setNombre(almacenDTO.getNombre());
+        almacen.setUbicacion(almacenDTO.getUbicacion());
+        almacen.setCapacidad(almacenDTO.getCapacidad());
+        almacen.setEstado(almacenDTO.getEstado());
+        if (almacenDTO.getResponsable() != null && almacenDTO.getResponsable().getId() != null) {
+            Usuario responsable = new Usuario();
+            responsable.setId(almacenDTO.getResponsable().getId());
+            almacen.setResponsable(responsable);
+        }
+        return almacen;
     }
 }

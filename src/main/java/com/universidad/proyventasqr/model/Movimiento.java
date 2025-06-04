@@ -39,6 +39,17 @@ public class Movimiento {
     private Almacen almacen;
     @OneToMany(mappedBy = "movimiento", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetalleMovimiento> productos;
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    private Usuario usuario;
+    @ManyToOne
+    @JoinColumn(name = "almacen_origen_id", referencedColumnName = "id_alm")
+    private Almacen almacenOrigen;
+    @ManyToOne
+    @JoinColumn(name = "almacen_destino_id", referencedColumnName = "id_alm")
+    private Almacen almacenDestino;
+    @Column(name = "motivo")
+    private String motivo;
 
 
 }

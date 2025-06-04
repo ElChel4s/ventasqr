@@ -9,5 +9,7 @@ public interface IDetalleMovimientoService {
 
     DetalleMovimientoDTO crearDetalleMovimiento(DetalleMovimientoDTO detalleMovimientoDTO);
     List<DetalleMovimientoDTO> obtenerDetallePorMovimiento(Long movId);
+    DetalleMovimientoDTO actualizarDetalleMovimiento(Long id, DetalleMovimientoDTO detalleMovimientoDTO);
+    void eliminarDetalleMovimiento(Long id);
     
 }

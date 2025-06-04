@@ -1,6 +1,5 @@
 package com.universidad.proyventasqr.dto;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
@@ -12,10 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class InventarioDTO {
+public class UsuarioDTO {
     private Integer id;
-    private ProductoDTO producto;
-    private AlmacenDTO almacen;
-    private BigDecimal cantidad;
-    private LocalDateTime actualizadoEn;
+    private String nombreUsuario;
+    private String claveHash;
+    private RolDTO rol;
+    private LocalDateTime creadoEn;
 }

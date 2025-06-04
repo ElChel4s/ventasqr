@@ -17,6 +17,7 @@ public class AlmacenDTO {
     private String ubicacion; // Ubicación del almacén
     private Integer capacidad; // Capacidad del almacén
     private String estado; // Estado del almacén (activo, inactivo, cerrado, etc.)
+    private UsuarioDTO responsable; // Nuevo: responsable del almacén
 
 }
 

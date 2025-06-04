@@ -9,9 +9,12 @@ import org.springframework.stereotype.Service;
 
 import com.universidad.proyventasqr.dto.MovimientoDTO;
 import com.universidad.proyventasqr.model.Almacen;
+import com.universidad.proyventasqr.model.DetalleMovimiento;
 import com.universidad.proyventasqr.model.Movimiento;
+import com.universidad.proyventasqr.model.Producto;
 import com.universidad.proyventasqr.repository.AlmacenRepository;
 import com.universidad.proyventasqr.repository.MovimientoRepository;
+import com.universidad.proyventasqr.repository.ProductoRepository;
 import com.universidad.proyventasqr.service.IMovimientoService;
 
 import jakarta.transaction.Transactional;
@@ -24,6 +27,8 @@ public class MovimientoServiceImpl implements IMovimientoService{
     private AlmacenRepository almacenRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private ProductoRepository productoRepository;
 
     @Override
     public List<MovimientoDTO> obtenerTodosLosMovimientos() {
@@ -35,12 +40,27 @@ public class MovimientoServiceImpl implements IMovimientoService{
     @Override
     @Transactional
     public MovimientoDTO crearMovimiento(MovimientoDTO movimientoDTO) {
-        if (movimientoDTO.getAlmacen() == null || movimientoDTO.getAlmacen().getId() == null){
+        if (movimientoDTO.getAlmacen() == null || movimientoDTO.getAlmacen().getIdAlm() == null){
             throw new IllegalArgumentException("Debe ingresar un almacen valido");
         }
-        Almacen almacen = almacenRepository.findById(movimientoDTO.getAlmacen().getId()).orElseThrow(()->new RuntimeException("El almacen con ID: "+ movimientoDTO.getAlmacen().getId()+" no existe"));
+        Almacen almacen = almacenRepository.findById(movimientoDTO.getAlmacen().getIdAlm()).orElseThrow(()->new RuntimeException("El almacen con ID: "+ movimientoDTO.getAlmacen().getIdAlm()+" no existe"));
         Movimiento movimiento = modelMapper.map(movimientoDTO, Movimiento.class);
         movimiento.setAlmacen(almacen);
+        // Procesar detalles si vienen en el DTO
+        if (movimientoDTO.getDetalles() != null && !movimientoDTO.getDetalles().isEmpty()) {
+            List<DetalleMovimiento> detalles = movimientoDTO.getDetalles().stream().map(detDTO -> {
+                DetalleMovimiento det = new DetalleMovimiento();
+                det.setMovimiento(movimiento);
+                det.setCantidad(detDTO.getCantidad());
+                if(detDTO.getProducto() == null || detDTO.getProducto().getIdProd() == null)
+                    throw new IllegalArgumentException("Producto requerido en detalle");
+                Producto producto = productoRepository.findById(detDTO.getProducto().getIdProd())
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                det.setProducto(producto);
+                return det;
+            }).collect(java.util.stream.Collectors.toList());
+            movimiento.setProductos(detalles);
+        }
         Movimiento guardarMovimiento = movimientoRepository.save(movimiento);
         return modelMapper.map(guardarMovimiento, MovimientoDTO.class);
         
@@ -63,8 +83,8 @@ public class MovimientoServiceImpl implements IMovimientoService{
     public MovimientoDTO actualizarMovimiento(Long id, MovimientoDTO movimientoDTO) {
         Movimiento movimiento = movimientoRepository.findById(id).orElseThrow(()->new RuntimeException("El movimiento con ID: "+id+" no existe"));
         //verificar si se esta cambiando de almacen
-        if(!movimiento.getAlmacen().getId().equals(movimientoDTO.getAlmacen().getId())){
-            Almacen nuevoAlmacen = almacenRepository.findById(movimientoDTO.getAlmacen().getId()).orElseThrow(()->new RuntimeException("El almacen con ID: "+movimientoDTO.getAlmacen().getId()+" no existe"));
+        if(!movimiento.getAlmacen().getId().equals(movimientoDTO.getAlmacen().getIdAlm())){
+            Almacen nuevoAlmacen = almacenRepository.findById(movimientoDTO.getAlmacen().getIdAlm()).orElseThrow(()->new RuntimeException("El almacen con ID:"+movimientoDTO.getAlmacen().getIdAlm()+" no existe"));
             movimiento.setAlmacen(nuevoAlmacen);
         }
         movimiento.setTipoMov(movimientoDTO.getTipoMov());

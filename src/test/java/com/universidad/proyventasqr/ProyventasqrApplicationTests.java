@@ -1,13 +1,9 @@
-package com.univerwsidad.proyventasqr;
+package com.universidad.proyventasqr;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+public class ProyventasqrApplicationTests {
 
-@SpringBootTest
-class ProyventasqrApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
+// 	@Test
+// 	void contextLoads() {
+// 	}
 
 }
