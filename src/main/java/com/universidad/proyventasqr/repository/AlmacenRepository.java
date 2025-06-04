@@ -17,3 +17,4 @@ public interface AlmacenRepository extends JpaRepository<Almacen, Long> {
      */
     List<Almacen> findByEstado(String estado);
 }
+

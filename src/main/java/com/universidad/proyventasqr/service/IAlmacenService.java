@@ -1,5 +1,4 @@
 package com.universidad.proyventasqr.service;
-
 import com.universidad.proyventasqr.dto.AlmacenDTO;
 
 import java.util.List;
@@ -64,3 +63,4 @@ public interface IAlmacenService {
      */
     void bajaAlmacen(Long id, String motivoBaja);
 }
+

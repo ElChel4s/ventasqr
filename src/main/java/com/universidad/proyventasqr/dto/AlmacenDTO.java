@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,3 +19,4 @@ public class AlmacenDTO {
     private String estado; // Estado del almacén (activo, inactivo, cerrado, etc.)
 
 }
+

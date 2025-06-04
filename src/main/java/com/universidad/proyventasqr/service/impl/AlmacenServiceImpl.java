@@ -4,11 +4,15 @@ import com.universidad.proyventasqr.dto.AlmacenDTO;
 import com.universidad.proyventasqr.model.Almacen;
 import com.universidad.proyventasqr.repository.AlmacenRepository;
 import com.universidad.proyventasqr.service.IAlmacenService;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 import java.util.stream.Collectors;
+
 
 @Service
 public class AlmacenServiceImpl implements IAlmacenService {

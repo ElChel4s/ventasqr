@@ -5,11 +5,14 @@ import com.universidad.proyventasqr.dto.InventarioDTO;
 import com.universidad.proyventasqr.dto.MotivoBajaRequest;
 import com.universidad.proyventasqr.service.IAlmacenService;
 import com.universidad.proyventasqr.service.IInventarioService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+
 
 @RestController
 @RequestMapping("/api/almacenes")
@@ -190,3 +193,4 @@ public class AlmacenController {
     }
 
 }
+
