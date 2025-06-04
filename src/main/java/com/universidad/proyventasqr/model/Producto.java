@@ -12,14 +12,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "producto")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,4 +41,12 @@ public class Producto {
     private Categoria categoria;
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetalleMovimiento> movimientos;
+    @Column(name = "codigo", length = 50)
+    private String codigo;
+    @Column(name = "descripcion")
+    private String descripcion;
+    @Column(name = "stock_minimo", precision = 10, scale = 2)
+    private BigDecimal stockMinimo;
+    @Column(name = "creado_en")
+    private java.time.LocalDateTime creadoEn;
 }

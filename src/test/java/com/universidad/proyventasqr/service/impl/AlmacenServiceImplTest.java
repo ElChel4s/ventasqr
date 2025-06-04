@@ -3,6 +3,7 @@ package com.universidad.proyventasqr.service.impl;
 import com.universidad.proyventasqr.dto.AlmacenDTO;
 import com.universidad.proyventasqr.model.Almacen;
 import com.universidad.proyventasqr.repository.AlmacenRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -19,14 +20,15 @@ class AlmacenServiceImplTest {
     @InjectMocks
     private AlmacenServiceImpl almacenService;
 
-    public AlmacenServiceImplTest() {
+    @BeforeEach
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
     void testObtenerTodosLosAlmacenes() {
-        Almacen a1 = Almacen.builder().idAlm(1L).nombre("Central").capacidad(100).estado("activo").build();
-        Almacen a2 = Almacen.builder().idAlm(2L).nombre("Secundario").capacidad(50).estado("activo").build();
+        Almacen a1 = Almacen.builder().id(1L).nombre("Central").capacidad(100).estado("activo").build();
+        Almacen a2 = Almacen.builder().id(2L).nombre("Secundario").capacidad(50).estado("activo").build();
         when(almacenRepository.findAll()).thenReturn(Arrays.asList(a1, a2));
         List<AlmacenDTO> resultado = almacenService.obtenerTodosLosAlmacenes();
         assertEquals(2, resultado.size());
@@ -42,7 +44,7 @@ class AlmacenServiceImplTest {
 
     @Test
     void testActualizarAlmacen() {
-        Almacen almacenExistente = Almacen.builder().idAlm(1L).nombre("Central").ubicacion("Calle 1").capacidad(100).estado("activo").build();
+        Almacen almacenExistente = Almacen.builder().id(1L).nombre("Central").ubicacion("Calle 1").capacidad(100).estado("activo").build();
         AlmacenDTO almacenDTO = AlmacenDTO.builder().idAlm(1L).nombre("Central Actualizado").ubicacion("Calle 2").capacidad(200).estado("activo").build();
         when(almacenRepository.findById(1L)).thenReturn(java.util.Optional.of(almacenExistente));
         when(almacenRepository.save(any(Almacen.class))).thenReturn(almacenExistente);
@@ -54,7 +56,7 @@ class AlmacenServiceImplTest {
 
     @Test
     void testEliminarLogico() {
-        Almacen almacen = Almacen.builder().idAlm(1L).nombre("Central").estado("activo").build();
+        Almacen almacen = Almacen.builder().id(1L).nombre("Central").estado("activo").build();
         when(almacenRepository.findById(1L)).thenReturn(java.util.Optional.of(almacen));
         when(almacenRepository.save(any(Almacen.class))).thenReturn(almacen);
         AlmacenServiceImpl service = new AlmacenServiceImpl(almacenRepository);

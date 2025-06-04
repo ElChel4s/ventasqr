@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class DetalleMovimientoDTO implements Serializable{
     private Long id;
+    private MovimientoDTO movimiento;
     private ProductoDTO producto;
-    // private MovimientoDTO movimiento;
-    private int cantidad;
+    private java.math.BigDecimal cantidad;
 }

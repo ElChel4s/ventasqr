@@ -1,5 +1,6 @@
 package com.universidad.proyventasqr.model;
 
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,27 +11,31 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "detalle_movimiento")
-public class DetalleMovimiento {
+@Builder
+@Entity
+@Table(name = "usuarios")
+public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_det")
-    private Long id;
-    @ManyToOne
-    @JoinColumn(name = "movimiento_id", referencedColumnName = "id_mov")
-    private Movimiento movimiento;
-    @ManyToOne
-    @JoinColumn(name = "producto_id", referencedColumnName = "id_prod")
-    private Producto producto;
-    @Column(name = "cantidad", precision = 10, scale = 2, nullable = false)
-    private java.math.BigDecimal cantidad;
+    private Integer id;
 
+    @Column(name = "nombre_usuario", length = 50, nullable = false)
+    private String nombreUsuario;
 
+    @Column(name = "clave_hash", nullable = false)
+    private String claveHash;
+
+    @ManyToOne
+    @JoinColumn(name = "rol_id", referencedColumnName = "id")
+    private Rol rol;
+
+    @Column(name = "creado_en")
+    private LocalDateTime creadoEn;
 }
