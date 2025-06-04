@@ -30,7 +30,7 @@ public class CategoriaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoriaDTO>> obtenerTodosLosEstudiantes() {
+    public ResponseEntity<List<CategoriaDTO>> obtenerTodasLasCategorias() {
         List<CategoriaDTO> categorias = categoriaService.obtenerTodasLasCategorias();
         return ResponseEntity.ok(categorias);
     }
@@ -47,10 +47,24 @@ public class CategoriaController {
         return ResponseEntity.ok(categoriaActualizado);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarCategoria(@PathVariable Long id) {
-        categoriaService.eliminarCategoria(id);
-        return ResponseEntity.noContent().build();
+    @PutMapping("/{id}/baja")
+    public ResponseEntity<CategoriaDTO> eliminarCategoria(
+        @PathVariable Long id,
+        @RequestBody CategoriaDTO categoriaDTO) {
+        CategoriaDTO categoriaEliminada = categoriaService.eliminarCategoria(id, categoriaDTO);
+        return ResponseEntity.ok(categoriaEliminada);
     }
     
+    @GetMapping("/nombre/{nombre}")
+    public ResponseEntity<CategoriaDTO> obtenerCategoriaPorNombre(
+        @PathVariable String nombre) {
+        CategoriaDTO categoria = categoriaService.obtenerCategoriaPorNombre(nombre);
+        return ResponseEntity.ok(categoria);
+    } 
+
+    @GetMapping("/ascendente")
+    public ResponseEntity<List<CategoriaDTO>> obtenerTodasLasCategoriasAscendentemente() {
+        List<CategoriaDTO> categorias = categoriaService.obtenerCategoriaAsc();
+        return ResponseEntity.ok(categorias);
+    }
 }
