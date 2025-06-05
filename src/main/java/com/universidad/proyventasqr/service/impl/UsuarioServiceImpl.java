@@ -8,6 +8,7 @@ import com.universidad.proyventasqr.repository.RolRepository;
 import com.universidad.proyventasqr.repository.UsuarioRepository;
 import com.universidad.proyventasqr.service.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
     private UsuarioRepository usuarioRepository;
     @Autowired
     private RolRepository rolRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public List<UsuarioDTO> obtenerTodos() {
@@ -37,6 +40,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         if(usuarioRepository.existsByNombreUsuario(usuarioDTO.getNombreUsuario()))
             throw new RuntimeException("El nombre de usuario ya existe");
         Usuario usuario = convertToEntity(usuarioDTO);
+        usuario.setClaveHash(passwordEncoder.encode(usuarioDTO.getClaveHash()));
         usuario.setCreadoEn(LocalDateTime.now());
         Usuario guardado = usuarioRepository.save(usuario);
         return convertToDTO(guardado);
@@ -46,7 +50,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
     public UsuarioDTO actualizar(Integer id, UsuarioDTO usuarioDTO) {
         Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         usuario.setNombreUsuario(usuarioDTO.getNombreUsuario());
-        usuario.setClaveHash(usuarioDTO.getClaveHash());
+        if (!usuarioDTO.getClaveHash().equals(usuario.getClaveHash())) {
+            usuario.setClaveHash(passwordEncoder.encode(usuarioDTO.getClaveHash()));
+        }
         if(usuarioDTO.getRol() != null && usuarioDTO.getRol().getId() != null) {
             Rol rol = rolRepository.findById(usuarioDTO.getRol().getId()).orElseThrow(() -> new RuntimeException("Rol no encontrado"));
             usuario.setRol(rol);

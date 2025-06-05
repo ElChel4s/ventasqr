@@ -19,7 +19,6 @@ public class MovimientoDTO implements Serializable{
     private LocalDate fecha;
     private String usuarioMov;
     private String estado;
-    private AlmacenDTO almacen;
     private UsuarioDTO usuario;
     private AlmacenDTO almacenOrigen;
     private AlmacenDTO almacenDestino;

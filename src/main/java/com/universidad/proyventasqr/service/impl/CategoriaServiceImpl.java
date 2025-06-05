@@ -1,6 +1,5 @@
 package com.universidad.proyventasqr.service.impl;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +32,8 @@ public class CategoriaServiceImpl implements ICategoriaService {
     @Override
     public CategoriaDTO crearCategoria(CategoriaDTO categoriaDTO) {
         Categoria categoria = convertToEntity(categoriaDTO);
+        categoria.setFecha_alta(java.time.LocalDate.now());
+        categoria.setEstado("ACTIVO");
         Categoria categoriaGuardado = categoriaRepository.save(categoria);
         return convertToDTO(categoriaGuardado);
     }
@@ -43,9 +44,9 @@ public class CategoriaServiceImpl implements ICategoriaService {
                     .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
         categoriaExiste.setNombre(categoriaDTO.getNombre());
         categoriaExiste.setDescripcion(categoriaDTO.getDescripcion());
-
-        Categoria categoriaActulizado = categoriaRepository.save(categoriaExiste);
-        return convertToDTO(categoriaActulizado);
+        // No sobrescribir estado ni fecha_alta
+        Categoria categoriaActualizado = categoriaRepository.save(categoriaExiste);
+        return convertToDTO(categoriaActualizado);
     }
 
     // Método para eliminar (de manera lógica) una categoria por su ID
@@ -54,7 +55,7 @@ public class CategoriaServiceImpl implements ICategoriaService {
         Categoria categoriaExiste = categoriaRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
         categoriaExiste.setEstado("INACTIVO");
-        categoriaExiste.setFecha_baja(LocalDate.now());
+        categoriaExiste.setFecha_baja(java.time.LocalDate.now());
         categoriaExiste.setMotivoBaja(categoriaDTO.getMotivoBaja());
 
         Categoria categoriaInactivo = categoriaRepository.save(categoriaExiste);
@@ -84,6 +85,7 @@ public class CategoriaServiceImpl implements ICategoriaService {
                 .id(categoria.getId())
                 .nombre(categoria.getNombre())
                 .descripcion(categoria.getDescripcion())
+                .estado(categoria.getEstado())
                 .fechaBaja(categoria.getFecha_baja())
                 .fechaAlta(categoria.getFecha_alta())
                 .motivoBaja(categoria.getMotivoBaja())
@@ -95,8 +97,8 @@ public class CategoriaServiceImpl implements ICategoriaService {
                 .id(categoriaDTO.getId())
                 .nombre(categoriaDTO.getNombre())
                 .descripcion(categoriaDTO.getDescripcion())
+                // No asignar estado ni fecha_alta aquí, se hace en crearCategoria
                 .fecha_baja(categoriaDTO.getFechaBaja())
-                .fecha_alta(categoriaDTO.getFechaAlta())
                 .motivoBaja(categoriaDTO.getMotivoBaja())
                 .build();
     }

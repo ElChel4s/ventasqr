@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,30 +24,35 @@ public class ProductoController {
     private IProductoService service;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
     public ResponseEntity<List<ProductoDTO>> obtenerTodosLosProductos() {
         List<ProductoDTO> productos = service.obtenerTodosLosProductos();
         return ResponseEntity.ok(productos);
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public ResponseEntity<ProductoDTO> crearProducto(@RequestBody ProductoDTO productoDTO) {
         ProductoDTO guardarProd = service.crearProducto(productoDTO);
         return new ResponseEntity<>(guardarProd, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
     public ResponseEntity<ProductoDTO> obtenerProductoPorId(@PathVariable Long id) {
         ProductoDTO productoDTO = service.obtenerProductoPorId(id);
         return ResponseEntity.ok(productoDTO);
     }
 
     @GetMapping("/categoria/{catId}")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
     public ResponseEntity<List<ProductoDTO>> obtenerProductosPorCategoria(@PathVariable Long catId) {
         List<ProductoDTO> productos = service.obtenerProductosPorCategoria(catId);
         return ResponseEntity.ok(productos);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public ResponseEntity<ProductoDTO> actualizarProducto(@PathVariable Long id, @RequestBody ProductoDTO productoDTO) {
         ProductoDTO updatedProducto = service.actualizarProducto(id, productoDTO);
         return ResponseEntity.ok(updatedProducto);
@@ -59,12 +65,14 @@ public class ProductoController {
     // }
     //Eliminacion logica "inactivo"
     @PutMapping("/del/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
         service.eliminarProducto(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/codigo/{codigo}")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
     public ResponseEntity<ProductoDTO> obtenerProductoPorCodigo(@PathVariable String codigo) {
         ProductoDTO productoDTO = service.obtenerProductoPorCodigo(codigo);
         return ResponseEntity.ok(productoDTO);

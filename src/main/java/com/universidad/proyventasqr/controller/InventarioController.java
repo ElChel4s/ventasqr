@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,6 +27,7 @@ public class InventarioController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public ResponseEntity<InventarioDTO> actualizar(@PathVariable Integer id,
             @RequestBody InventarioDTO inventarioDTO) {
         InventarioDTO actualizado = inventarioService.actualizarInventario(id, inventarioDTO);
@@ -33,11 +35,13 @@ public class InventarioController {
     }
 
     @GetMapping("/almacen/{almacenId}")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
     public ResponseEntity<List<InventarioDTO>> obtenerPorAlmacen(@PathVariable Long almacenId) {
         return ResponseEntity.ok(inventarioService.obtenerInventariosPorAlmacen(almacenId));
     }
 
     @GetMapping("/producto/{productoId}")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
     public ResponseEntity<List<InventarioDTO>> obtenerPorProducto(@PathVariable Integer productoId) {
         return ResponseEntity.ok(inventarioService.obtenerInventariosPorProducto(productoId));
     }
@@ -46,6 +50,7 @@ public class InventarioController {
      * Obtener un inventario por su ID
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
     public ResponseEntity<InventarioDTO> obtenerPorId(@PathVariable Integer id) {
         List<InventarioDTO> todos = inventarioService.obtenerTodosLosInventarios();
         return todos.stream()
@@ -59,6 +64,7 @@ public class InventarioController {
      * Listar inventarios ordenados por cantidad ascendente
      */
     @GetMapping("/ordenar/cantidad")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
     public ResponseEntity<List<InventarioDTO>> listarOrdenadosPorCantidad(@RequestParam(defaultValue = "asc") String orden) {
         List<InventarioDTO> inventarios = inventarioService.obtenerTodosLosInventarios();
         inventarios.sort((a, b) -> {
@@ -75,6 +81,7 @@ public class InventarioController {
      * Listar inventarios ordenados por nombre de producto ascendente o descendente
      */
     @GetMapping("/ordenar/nombre")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
     public ResponseEntity<List<InventarioDTO>> listarOrdenadosPorNombre(@RequestParam(defaultValue = "asc") String orden) {
         List<InventarioDTO> inventarios = inventarioService.obtenerTodosLosInventarios();
         inventarios.sort((a, b) -> {
