@@ -8,6 +8,7 @@ import com.universidad.proyventasqr.service.IInventarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class AlmacenController {
      * @return ResponseEntity con lista de almacenes.
      */
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
     public ResponseEntity<List<AlmacenDTO>> obtenerTodosLosAlmacenes() {
         List<AlmacenDTO> almacenes = almacenService.obtenerTodosLosAlmacenes();
         return ResponseEntity.ok(almacenes);
@@ -45,6 +47,7 @@ public class AlmacenController {
      * @return ResponseEntity con el almacén creado.
      */
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public ResponseEntity<AlmacenDTO> crearAlmacen(@RequestBody AlmacenDTO almacenDTO) {
         AlmacenDTO nuevoAlmacen = almacenService.crearAlmacen(almacenDTO);
         return ResponseEntity.status(201).body(nuevoAlmacen);
@@ -58,6 +61,7 @@ public class AlmacenController {
      * @return ResponseEntity con el almacén actualizado.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public ResponseEntity<AlmacenDTO> actualizarAlmacen(@PathVariable Long id, @RequestBody AlmacenDTO almacenDTO) {
         AlmacenDTO almacenActualizado = almacenService.actualizarAlmacen(id, almacenDTO);
         return ResponseEntity.ok(almacenActualizado);
@@ -70,6 +74,7 @@ public class AlmacenController {
      * @return ResponseEntity vacío con código 204 si es exitoso.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public ResponseEntity<Void> eliminarAlmacen(@PathVariable Long id) {
         almacenService.eliminarAlmacen(id);
         return ResponseEntity.noContent().build();
@@ -82,6 +87,7 @@ public class AlmacenController {
      * @return ResponseEntity con lista de almacenes filtrados.
      */
     @GetMapping("/estado")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
     public ResponseEntity<List<AlmacenDTO>> obtenerAlmacenesPorEstado(@RequestParam String estado) {
         List<AlmacenDTO> almacenes = almacenService.obtenerAlmacenesPorEstado(estado);
         return ResponseEntity.ok(almacenes);
@@ -91,6 +97,7 @@ public class AlmacenController {
      * Listar almacenes ordenados por nombre ascendente o descendente
      */
     @GetMapping("/orden")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
     public ResponseEntity<List<AlmacenDTO>> listarOrdenados(@RequestParam(defaultValue = "asc") String orden) {
         List<AlmacenDTO> almacenes = almacenService.obtenerTodosLosAlmacenes();
         almacenes.sort((a, b) -> orden.equalsIgnoreCase("desc") ? b.getNombre().compareToIgnoreCase(a.getNombre())
@@ -102,6 +109,7 @@ public class AlmacenController {
      * Listar almacenes por nombre (contiene, no exacto)
      */
     @GetMapping("/buscar")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
     public ResponseEntity<List<AlmacenDTO>> buscarPorNombre(@RequestParam String nombre) {
         List<AlmacenDTO> almacenes = almacenService.obtenerTodosLosAlmacenes();
         List<AlmacenDTO> filtrados = almacenes.stream()
@@ -114,6 +122,7 @@ public class AlmacenController {
      * Eliminar lógico de almacén (cambia estado a 'eliminado')
      */
     @DeleteMapping("/logico/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public ResponseEntity<Void> eliminarLogico(@PathVariable Long id) {
         almacenService.eliminarLogico(id);
         return ResponseEntity.noContent().build();
@@ -123,6 +132,7 @@ public class AlmacenController {
      * Desactivar (eliminación lógica) un almacén con motivo de baja
      */
     @PutMapping("/baja/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public ResponseEntity<Void> bajaAlmacen(@PathVariable Long id, @RequestBody MotivoBajaRequest motivo) {
         almacenService.bajaAlmacen(id, motivo.getMotivoBaja());
         return ResponseEntity.noContent().build();
@@ -132,6 +142,7 @@ public class AlmacenController {
      * Obtener un almacén por su ID
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
     public ResponseEntity<AlmacenDTO> obtenerPorId(@PathVariable Long id) {
         List<AlmacenDTO> almacenes = almacenService.obtenerTodosLosAlmacenes();
         return almacenes.stream()

@@ -34,9 +34,6 @@ public class Movimiento {
     @Column(name = "usuario_mov")
     private String usuarioMov;
     private String estado;
-    @ManyToOne
-    @JoinColumn(name = "alm_id")
-    private Almacen almacen;
     @OneToMany(mappedBy = "movimiento", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetalleMovimiento> productos;
     @ManyToOne

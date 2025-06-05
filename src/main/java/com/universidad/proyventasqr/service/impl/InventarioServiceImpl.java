@@ -70,14 +70,14 @@ public class InventarioServiceImpl implements IInventarioService {
 
     @Override
     public List<InventarioDTO> obtenerInventariosPorAlmacen(Long almacenId) {
-        return inventarioRepository.findByAlmacen_IdAlm(almacenId).stream()
+        return inventarioRepository.findByAlmacen_Id(almacenId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<InventarioDTO> obtenerInventariosPorProducto(Integer productoId) {
-        return inventarioRepository.findByProductoId(productoId).stream()
+        return inventarioRepository.findByProducto_IdProd(productoId.longValue()).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }

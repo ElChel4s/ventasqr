@@ -1,17 +1,22 @@
 package com.universidad.proyventasqr.model;
 
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "almacen")
 public class Almacen {
@@ -33,9 +38,15 @@ public class Almacen {
     @Column(name = "estado")
     private String estado;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "almacen", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Movimiento> movimientos;
+    // Eliminada la relación obsoleta de movimientos, ya que Movimiento ya no tiene el campo almacen
+    // Si se requiere relación bidireccional, agregar lo siguiente:
+    // @OneToMany(mappedBy = "almacenOrigen", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // private List<Movimiento> movimientosComoOrigen;
+    // @OneToMany(mappedBy = "almacenDestino", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // private List<Movimiento> movimientosComoDestino;
 
+    @ManyToOne
+    @JoinColumn(name = "responsable_id")
+    private Usuario responsable;
 
 }
