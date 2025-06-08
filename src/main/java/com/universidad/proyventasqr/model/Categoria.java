@@ -15,6 +15,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,6 +40,7 @@ public class Categoria {
     @Column(name = "descripcion")
     private String descripcion;
 
+    @NotBlank(message = "El estado no puede estar vacío.")
     @Column(name = "estado")
     private String estado;
 
