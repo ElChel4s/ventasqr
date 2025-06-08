@@ -79,6 +79,21 @@ public class CategoriaServiceImpl implements ICategoriaService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+    
+    @Override
+    public CategoriaDTO obtenerCategoriaPorId(long id){
+        return categoriaRepository.findById(id)
+                .map(categoria -> CategoriaDTO.builder()
+                        .id(categoria.getId())
+                        .nombre(categoria.getNombre())
+                        .descripcion(categoria.getDescripcion())
+                        .estado(categoria.getEstado())
+                        .fechaAlta(categoria.getFecha_alta())
+                        .fechaBaja(categoria.getFecha_baja())
+                        .motivoBaja(categoria.getMotivoBaja())
+                        .build())
+                .orElse(null);      
+    }
     // Método auxiliar para convertir entidad a DTO
     public CategoriaDTO convertToDTO(Categoria categoria) {
         return CategoriaDTO.builder()

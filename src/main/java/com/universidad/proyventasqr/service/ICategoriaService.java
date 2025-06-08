@@ -49,4 +49,11 @@ public interface ICategoriaService {
      * @return Lista de CategoriasDTO
      */
     List<CategoriaDTO> obtenerCategoriaAsc();
+
+    /**
+     * Obtiene un estudiante por su ID con bloqueo pesimista.
+     * @param id ID del estudiante a obtener.
+     * @return
+     */
+    CategoriaDTO obtenerCategoriaPorId(long id);
 }
