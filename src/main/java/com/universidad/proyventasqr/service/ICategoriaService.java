@@ -33,5 +33,27 @@ public interface ICategoriaService {
      * Elimina una categoria por su ID.
      * @param id  ID de la categoria a eliminar.
      */
-    void eliminarCategoria(Long id);
+    //void eliminarCategoria(Long id);
+    // Método para eliminar (de manera logica) una categoria por su ID
+    CategoriaDTO eliminarCategoria(Long id, CategoriaDTO categoriaDTO);
+
+    /**
+     * Obtiene una categoria por su nombre 
+     * @param nombre
+     * @return 
+     */
+    CategoriaDTO obtenerCategoriaPorNombre(String nombreCategoria);
+
+    /**
+     * Obtiene todas las categorias ordenadas de forma ascendente
+     * @return Lista de CategoriasDTO
+     */
+    List<CategoriaDTO> obtenerCategoriaAsc();
+
+    /**
+     * Obtiene un estudiante por su ID con bloqueo pesimista.
+     * @param id ID del estudiante a obtener.
+     * @return
+     */
+    CategoriaDTO obtenerCategoriaPorId(long id);
 }

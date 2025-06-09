@@ -26,7 +26,7 @@ public class Movimiento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_mov")
-    private Long idMov;
+    private Long id;
     @Column(name = "tipo_mov")
     private String tipoMov;
     @Temporal(TemporalType.DATE)
@@ -34,11 +34,19 @@ public class Movimiento {
     @Column(name = "usuario_mov")
     private String usuarioMov;
     private String estado;
-    @ManyToOne
-    @JoinColumn(name = "alm_id")
-    private Almacen almacen;
     @OneToMany(mappedBy = "movimiento", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetalleMovimiento> productos;
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    private Usuario usuario;
+    @ManyToOne
+    @JoinColumn(name = "almacen_origen_id", referencedColumnName = "id_alm")
+    private Almacen almacenOrigen;
+    @ManyToOne
+    @JoinColumn(name = "almacen_destino_id", referencedColumnName = "id_alm")
+    private Almacen almacenDestino;
+    @Column(name = "motivo")
+    private String motivo;
 
 
 }

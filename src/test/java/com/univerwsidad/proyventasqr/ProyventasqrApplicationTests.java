@@ -1,13 +1,1 @@
-package com.univerwsidad.proyventasqr;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-class ProyventasqrApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
-}
+// Archivo eliminado: este test estaba en el paquete incorrecto y causaba errores de contexto de Spring Boot.

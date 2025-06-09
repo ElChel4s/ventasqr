@@ -22,14 +22,15 @@ public class DetalleMovimiento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_det")
-    private Long idDet;
+    private Long id;
     @ManyToOne
-    @JoinColumn(name = "prod_id")
-    private Producto producto;
-    @ManyToOne
-    @JoinColumn(name = "movi_id")
+    @JoinColumn(name = "movimiento_id", referencedColumnName = "id_mov")
     private Movimiento movimiento;
-    private int cantidad;
+    @ManyToOne
+    @JoinColumn(name = "producto_id", referencedColumnName = "id_prod")
+    private Producto producto;
+    @Column(name = "cantidad", precision = 10, scale = 2, nullable = false)
+    private java.math.BigDecimal cantidad;
 
 
 }
