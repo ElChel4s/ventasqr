@@ -1,5 +1,6 @@
 package com.universidad.proyventasqr.service.impl;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,12 +8,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.zxing.WriterException;
 import com.universidad.proyventasqr.dto.ProductoDTO;
 import com.universidad.proyventasqr.model.Categoria;
 import com.universidad.proyventasqr.model.Producto;
 import com.universidad.proyventasqr.repository.CategoriaRepository;
 import com.universidad.proyventasqr.repository.ProductoRepository;
 import com.universidad.proyventasqr.service.IProductoService;
+import com.universidad.proyventasqr.util.QRGeneratorUtil;
 
 import jakarta.transaction.Transactional;
 
@@ -24,6 +27,8 @@ public class ProductoServiceImpl implements IProductoService {
     private CategoriaRepository categoriaRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private QRGeneratorUtil qrGeneratorUtil;
 
     @Override
     public List<ProductoDTO> obtenerTodosLosProductos() {
@@ -50,15 +55,54 @@ public class ProductoServiceImpl implements IProductoService {
         } else {
             producto.setCreadoEn(productoDTO.getCreadoEn());
         }
+        
+        // Guardar primero para obtener ID
         Producto guardaProducto = productoRepository.save(producto);
-        return modelMapper.map(guardaProducto, ProductoDTO.class);
-    }
-
-    @Override
+        
+        try {
+            // Generar QR con ID del producto
+            String baseUrl = "/api/productos/" + guardaProducto.getIdProd();
+            
+            // Generar QR como Base64
+            String qrBase64 = qrGeneratorUtil.generateQRCodeAsBase64(baseUrl, 200, 200);
+            
+            // También guardar el QR como archivo
+            String qrFilePath = qrGeneratorUtil.generateQRCodeAndSaveToFile(
+                baseUrl, 
+                200, 
+                200, 
+                "producto_" + guardaProducto.getIdProd()
+            );
+              // Actualizar el producto con el código QR (guardamos una ruta relativa)
+            // Solo guardamos el nombre del archivo, no la ruta completa
+            String relativePath = "producto_" + guardaProducto.getIdProd() + ".png";
+            guardaProducto.setCodigoQr(relativePath);
+            guardaProducto = productoRepository.save(guardaProducto);
+            
+            // Actualizar el DTO respuesta con ambos valores
+            ProductoDTO resultado = modelMapper.map(guardaProducto, ProductoDTO.class);
+            // Por ahora enviamos el QR como base64 para visualización inmediata
+            resultado.setCodigoQr(qrBase64);
+            return resultado;
+        } catch (WriterException | IOException e) {
+            // En caso de error, retornar el producto sin QR
+            System.err.println("Error generando el código QR: " + e.getMessage());
+            return modelMapper.map(guardaProducto, ProductoDTO.class);
+        }
+    }    @Override
     public ProductoDTO obtenerProductoPorId(Long id) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("El Producto con ID: " + id + " no existe"));
-        return modelMapper.map(producto, ProductoDTO.class);
+        ProductoDTO productoDTO = modelMapper.map(producto, ProductoDTO.class);
+        
+        // Si el producto tiene un código QR guardado como ruta de archivo
+        if (producto.getCodigoQr() != null && !producto.getCodigoQr().isEmpty()) {
+            // Simplemente devolvemos el nombre del archivo, que el frontend
+            // construirá la URL completa con la ruta base
+            productoDTO.setCodigoQr(producto.getCodigoQr());
+        }
+        
+        return productoDTO;
     }
 
     @Override
