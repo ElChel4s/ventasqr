@@ -1,9 +1,14 @@
 package com.universidad.proyventasqr.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -78,4 +83,59 @@ public class ProductoController {
         return ResponseEntity.ok(productoDTO);
     }
 
+    /**
+     * Endpoint para obtener el QR de un producto específico
+     * @param id ID del producto
+     * @return Imagen QR en Base64
+     */
+    @GetMapping("/{id}/qr")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
+    public ResponseEntity<String> obtenerQRProducto(@PathVariable Long id) {
+        ProductoDTO productoDTO = service.obtenerProductoPorId(id);
+        String qrCode = productoDTO.getCodigoQr();
+        
+        if (qrCode == null || qrCode.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(qrCode);
+    }
+      /**
+     * Endpoint para obtener el QR de un producto específico como imagen
+     * @param id ID del producto
+     * @return Imagen QR en formato PNG
+     */    @GetMapping("/{id}/qr-imagen")
+    // Eliminada la anotación PreAuthorize para permitir acceso público
+    public ResponseEntity<byte[]> obtenerImagenQRProducto(@PathVariable Long id) {
+        ProductoDTO productoDTO = service.obtenerProductoPorId(id);
+        String qrFileName = productoDTO.getCodigoQr();
+        
+        if (qrFileName == null || qrFileName.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        try {
+            // Construir la ruta completa al archivo QR
+            Path path;
+            if (qrFileName.contains("/") || qrFileName.contains("\\")) {
+                // Si ya es una ruta completa
+                path = Paths.get(qrFileName);
+            } else {
+                // Si es solo el nombre del archivo
+                path = Paths.get("qrs", qrFileName);
+            }
+            
+            byte[] image = Files.readAllBytes(path);
+            
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_PNG)
+                    .body(image);
+        } catch (IOException e) {
+            System.err.println("Error al leer el archivo QR: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
 }
