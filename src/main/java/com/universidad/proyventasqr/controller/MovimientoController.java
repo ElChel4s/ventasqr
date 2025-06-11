@@ -1,6 +1,7 @@
 package com.universidad.proyventasqr.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,42 +24,71 @@ import com.universidad.proyventasqr.service.IMovimientoService;
 public class MovimientoController {
     @Autowired
     private IMovimientoService service;
+
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
-    public ResponseEntity<List<MovimientoDTO>> obtenerTodosLosMovimientos(){
+    public ResponseEntity<List<MovimientoDTO>> obtenerTodosLosMovimientos() {
         List<MovimientoDTO> movimientos = service.obtenerTodosLosMovimientos();
         return ResponseEntity.ok(movimientos);
     }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
-    public ResponseEntity<MovimientoDTO> crearMovimiento(@RequestBody MovimientoDTO movimientoDTO){
+    public ResponseEntity<MovimientoDTO> crearMovimiento(@RequestBody MovimientoDTO movimientoDTO) {
         // Obtener el usuario autenticado
-        String username = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication().getName();
         MovimientoDTO guardarMov = service.crearMovimientoConUsuario(movimientoDTO, username);
-        return new ResponseEntity<>(guardarMov,HttpStatus.CREATED);
+        return new ResponseEntity<>(guardarMov, HttpStatus.CREATED);
     }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
-    public ResponseEntity<MovimientoDTO> obtenerMovimientoPorId(@PathVariable Long id){
+    public ResponseEntity<MovimientoDTO> obtenerMovimientoPorId(@PathVariable Long id) {
         MovimientoDTO movimientoDTO = service.obtenerMovimientoPorId(id);
         return ResponseEntity.ok(movimientoDTO);
     }
-//    @GetMapping("/almacen/{almId}")
-//    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
-//    public ResponseEntity<List<MovimientoDTO>> obtenerMovimientosPorAlmacen(@PathVariable Long almId){
-//        List<MovimientoDTO> movimientos = service.obtenerMovimientosPorAlmacen(almId);
-//        return ResponseEntity.ok(movimientos);
-//    }
+
+    // @GetMapping("/almacen/{almId}")
+    // @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
+    // public ResponseEntity<List<MovimientoDTO>>
+    // obtenerMovimientosPorAlmacen(@PathVariable Long almId){
+    // List<MovimientoDTO> movimientos =
+    // service.obtenerMovimientosPorAlmacen(almId);
+    // return ResponseEntity.ok(movimientos);
+    // }
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
-    public ResponseEntity<MovimientoDTO> actualizarMovimiento(@PathVariable Long id, @RequestBody MovimientoDTO movimientoDTO){
+    public ResponseEntity<MovimientoDTO> actualizarMovimiento(@PathVariable Long id,
+            @RequestBody MovimientoDTO movimientoDTO) {
         MovimientoDTO updateMov = service.actualizarMovimiento(id, movimientoDTO);
         return ResponseEntity.ok(updateMov);
     }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
-    public ResponseEntity<Void> eliminarMovimiento(@PathVariable Long id){
+    public ResponseEntity<Void> eliminarMovimiento(@PathVariable Long id) {
         service.eliminarMovimiento(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/ticket-pdf")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
+    public ResponseEntity<byte[]> obtenerTicketMovimientoPDF(@PathVariable Long id) {
+        byte[] pdfBytes = service.generarTicketMovimientoPDF(id);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=ticket_movimiento_" + id + ".pdf")
+                .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                .body(pdfBytes);
+    }
+
+    @GetMapping("/ids")
+    @PreAuthorize("hasAnyRole('ADMIN','GERENTE','PERSONAL')")
+    public ResponseEntity<List<Long>> obtenerIdsMovimientos() {
+        List<MovimientoDTO> movimientos = service.obtenerTodosLosMovimientos();
+        List<Long> ids = movimientos.stream()
+                .map(MovimientoDTO::getId)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(ids);
     }
 }
